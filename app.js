@@ -1,4 +1,4 @@
-import init, { ObitGenerator } from './pkg/obit_generator.js';
+import init, { ObitGenerator } from './obit_generator.js';
 
 const { createApp, ref, reactive, computed, onMounted } = Vue;
 const { jsPDF } = window.jspdf;
