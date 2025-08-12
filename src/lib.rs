@@ -8,6 +8,10 @@ pub struct ObitGenerator;
 impl ObitGenerator {
     #[wasm_bindgen(constructor)]
     pub fn new() -> ObitGenerator {
+        // Initialize panic handler for better WASM error messages
+        #[cfg(target_arch = "wasm32")]
+        console_error_panic_hook::set_once();
+        
         ObitGenerator
     }
 
@@ -27,6 +31,10 @@ impl ObitGenerator {
             format!("With solemn hearts, we mark the departure of {} from this temporal plane.", name),
         ];
 
+        let mut rng = rand::thread_rng();
+        phrases.choose(&mut rng).cloned().unwrap_or_default()
+    }
+}
         // Choose a random phrase
         let mut rng = rand::thread_rng();
         phrases.choose(&mut rng).cloned().unwrap_or_default()
