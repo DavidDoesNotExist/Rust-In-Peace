@@ -10,21 +10,29 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Cache Rust dependencies
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            target
+          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+
       - uses: actions-rs/toolchain@v1
         with:
           toolchain: stable
+          targets: wasm32-unknown-unknown
           profile: minimal
           override: true
 
-      - uses: actions-rs/install@v0.1
-        with:
-          crate: wasm-pack
-          version: latest
+      - name: Install wasm-pack
+        run: cargo install wasm-pack --version 0.10.3
 
       - name: Build WASM
-        run: wasm-pack build --target web
+        run: wasm-pack build --target web --release
 
-      - name: Move WASM files to root
+      - name: Move WASM files
         run: |
           mv pkg/obit_generator.js .
           mv pkg/obit_generator_bg.wasm .
