@@ -1,8 +1,7 @@
+import init, { ObitGenerator } from './obit_generator.js';
+
 const { createApp, ref, reactive, computed, onMounted } = Vue;
 const { jsPDF } = window.jspdf;
-
-// Import the WebAssembly module
-import init, { ObitGenerator } from './pkg/obit_generator.js';
 
 const app = createApp({
     setup() {
@@ -22,15 +21,12 @@ const app = createApp({
         // Initialize Rust module
         onMounted(async () => {
             try {
-                // Initialize WebAssembly
-                await init();
-                
-                // Create the generator instance
+                await init(); // Initialize WASM first
                 rustGenerator.value = new ObitGenerator();
-                
                 rustInitialized.value = true;
             } catch (error) {
-                console.error('Failed to initialize Rust module:', error);
+                console.error('WASM initialization failed:', error);
+                rustGeneratedAnnouncement.value = "Error initializing generator";
             }
         });
         
