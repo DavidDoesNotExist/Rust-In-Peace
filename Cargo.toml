@@ -8,4 +8,8 @@ crate-type = ["cdylib"]
 
 [dependencies]
 wasm-bindgen = "0.2"
-rand = "0.8"
+rand = { version = "0.8", features = ["getrandom_js"] }  # ← Key change!
+
+[dependencies.getrandom]
+version = "0.2"
+features = ["js"]  # ← Enables WebAssembly support
