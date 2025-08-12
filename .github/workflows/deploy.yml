@@ -14,29 +14,29 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-
+      
       - name: Set up Rust
         uses: dtolnay/rust-toolchain@stable
         with:
           targets: wasm32-unknown-unknown
-
+          
       - name: Build WASM
         run: |
           cargo install wasm-pack --version 0.10.3
           wasm-pack build --target web --release
           cp pkg/obit_generator.js .
           cp pkg/obit_generator_bg.wasm .
-
-      - name: Upload files
-        uses: actions/upload-pages-artifact@v2
+          
+      - name: Prepare deployment
+        run: |
+          mkdir -p public
+          cp index.html style.css app.js obit_generator.js obit_generator_bg.wasm .nojekyll public/
+          
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
         with:
-          path: |
-            index.html
-            style.css
-            app.js
-            obit_generator.js
-            obit_generator_bg.wasm
-            .nojekyll
+          name: website
+          path: public
 
   deploy:
     needs: build
@@ -45,6 +45,20 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
     steps:
+      - name: Download artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: website
+          path: public
+          
+      - name: Setup Pages
+        uses: actions/configure-pages@v4
+        
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: public
+          
       - name: Deploy to GitHub Pages
         id: deployment
-        uses: actions/deploy-pages@v3
+        uses: actions/deploy-pages@v4
