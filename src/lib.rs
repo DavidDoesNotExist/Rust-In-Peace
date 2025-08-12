@@ -8,15 +8,11 @@ pub struct ObitGenerator;
 impl ObitGenerator {
     #[wasm_bindgen(constructor)]
     pub fn new() -> ObitGenerator {
-        // Set up better error handling for WASM
-        #[cfg(target_arch = "wasm32")]
-        std::panic::set_hook(Box::new(console_error_panic_hook::hook));
-        
+        console_error_panic_hook::set_once();
         ObitGenerator
     }
 
     pub fn generate_death_announcement(&self, name: &str) -> String {
-        // Handle empty name case
         if name.trim().is_empty() {
             return "A soul has departed this realm, leaving memories behind.".into();
         }
@@ -32,9 +28,7 @@ impl ObitGenerator {
             format!("With solemn hearts, we mark the departure of {} from this temporal plane.", name),
         ];
 
-        // Get a random phrase safely
-        let mut rng = rand::thread_rng();
-        phrases.choose(&mut rng)
+        phrases.choose(&mut rand::thread_rng())
             .cloned()
             .unwrap_or_else(|| format!("{} has passed away.", name))
     }
