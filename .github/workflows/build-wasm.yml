@@ -1,0 +1,36 @@
+name: Build WASM
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          profile: minimal
+          override: true
+
+      - uses: actions-rs/install@v0.1
+        with:
+          crate: wasm-pack
+          version: latest
+
+      - name: Build WASM
+        run: wasm-pack build --target web
+
+      - name: Move WASM files to root
+        run: |
+          mv pkg/obit_generator.js .
+          mv pkg/obit_generator_bg.wasm .
+
+      - name: Deploy to Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: .
